@@ -12,5 +12,5 @@
 
 ## Installation
 ```bash
-curl -o /usr/local/bin/sysopctl https://raw.githubusercontent.com/<your-username>/sysopctl/main/sysopctl
+curl -o /usr/local/bin/sysopctl https://raw.githubusercontent.com/PrathamBansal1302/sysoptcl/refs/heads/master/sysopctl
 chmod +x /usr/local/bin/sysopctl
