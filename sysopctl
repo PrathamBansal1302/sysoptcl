@@ -1,0 +1,128 @@
+#!/bin/bash
+
+VERSION="v0.1.0"
+
+# Function Definitions
+service_list() {
+    echo "Listing active services..."
+    systemctl list-units --type=service
+}
+
+service_manage() {
+    if [[ "$1" == "start" || "$1" == "stop" ]]; then
+        echo "Attempting to $1 service $2..."
+        systemctl "$1" "$2"
+    else
+        echo "Invalid operation. Use 'start' or 'stop'."
+    fi
+}
+
+system_load() {
+    echo "System Load:"
+    uptime
+}
+
+disk_usage() {
+    echo "Disk Usage:"
+    df -h
+}
+
+process_monitor() {
+    echo "Monitoring processes..."
+    top
+}
+
+logs_analyze() {
+    echo "Analyzing logs..."
+    journalctl -p crit
+}
+
+backup_files() {
+    if [[ -d "$1" ]]; then
+        echo "Backing up $1..."
+        rsync -av --progress "$1" "/backup/$(basename "$1")"
+        echo "Backup completed for $1."
+    else
+        echo "Error: Directory $1 does not exist."
+    fi
+}
+
+# Command Routing
+case "$1" in
+    --help)
+        echo "sysopctl - A custom system management command"
+        echo "Usage:"
+        echo "  sysopctl --help                Show this help message"
+        echo "  sysopctl --version             Show version information"
+        echo "  sysopctl service list          List running services"
+        echo "  sysopctl service start <name>  Start a system service"
+        echo "  sysopctl service stop <name>   Stop a system service"
+        echo "  sysopctl disk usage            Show disk usage"
+        echo "  sysopctl system load           Show system load"
+        echo "  sysopctl process monitor       Monitor system processes"
+        echo "  sysopctl logs analyze          Analyze system logs"
+        echo "  sysopctl backup <path>         Backup system files"
+        ;;
+    --version)
+        echo "sysopctl version $VERSION"
+        ;;
+    service)
+        case "$2" in
+            list)
+                service_list
+                ;;
+            start|stop)
+                service_manage "$2" "$3"
+                ;;
+            *)
+                echo "Invalid service command. Use 'sysopctl --help' for options."
+                ;;
+        esac
+        ;;
+    disk)
+        case "$2" in
+            usage)
+                disk_usage
+                ;;
+            *)
+                echo "Invalid disk command. Use 'sysopctl --help' for options."
+                ;;
+        esac
+        ;;
+    system)
+        case "$2" in
+            load)
+                system_load
+                ;;
+            *)
+                echo "Invalid system command. Use 'sysopctl --help' for options."
+                ;;
+        esac
+        ;;
+    process)
+        case "$2" in
+            monitor)
+                process_monitor
+                ;;
+            *)
+                echo "Invalid process command. Use 'sysopctl --help' for options."
+                ;;
+        esac
+        ;;
+    logs)
+        case "$2" in
+            analyze)
+                logs_analyze
+                ;;
+            *)
+                echo "Invalid logs command. Use 'sysopctl --help' for options."
+                ;;
+        esac
+        ;;
+    backup)
+        backup_files "$2"
+        ;;
+    *)
+        echo "Invalid command. Use 'sysopctl --help' for options."
+        ;;
+esac
